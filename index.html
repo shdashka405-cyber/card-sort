@@ -12,6 +12,7 @@
     background: #f4f5f7;
     font-family: "Segoe UI", Arial, sans-serif;
     color: #1c2b4a;
+    -webkit-tap-highlight-color: transparent;
   }
   .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 80px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
@@ -50,26 +51,41 @@
 
   /* respondent view */
   .progress { font-size: 14px; color: #6b7684; margin-bottom: 16px; }
-  .pool {
-    display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; background: #fff;
-    border-radius: 12px; min-height: 70px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
+
+  .sort-layout { display: flex; gap: 24px; align-items: flex-start; }
+  .sort-col { flex: 1 1 0; min-width: 0; }
+  @media (max-width: 680px) {
+    .sort-layout { flex-direction: column; }
   }
-  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+  .pool {
+    display: flex; flex-wrap: wrap; gap: 12px; padding: 14px; background: #fff;
+    border-radius: 12px; min-height: 70px; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
+  }
+  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
   .category-box {
-    background: #fff; border: 2px dashed #dcdfe4; border-radius: 12px; padding: 12px; min-height: 130px;
-    display: flex; flex-direction: column;
+    background: #fff; border: 2px solid #dcdfe4; border-radius: 12px; padding: 12px; min-height: 150px;
+    display: flex; flex-direction: column; outline: none;
   }
   .category-box.drop-hover { border-color: #e8262b; background: #fdecec; }
-  .category-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
-  .category-body { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; align-content: flex-start; }
+  .category-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
+  .category-header img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; -webkit-user-drag: none; user-drag: none; }
+  .category-body { display: flex; flex-wrap: wrap; gap: 10px; flex: 1; align-content: flex-start; }
 
   .card-chip {
-    display: flex; align-items: center; gap: 8px; background: #f4f5f7; border-radius: 8px; padding: 8px 10px;
-    font-size: 13px; cursor: grab; user-select: none; touch-action: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; align-items: center; gap: 6px; background: #f4f5f7; border-radius: 10px;
+    padding: 10px; width: 120px; font-size: 13px; text-align: center; cursor: grab; touch-action: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   }
-  .card-chip img { width: 28px; height: 28px; border-radius: 5px; object-fit: cover; }
+  .card-chip img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+  .card-chip span { word-break: break-word; }
   .card-chip.dragging { opacity: 0.35; }
   .drag-ghost { position: fixed; z-index: 1000; pointer-events: none; }
+
+  .pool, .categories-grid, .category-box, .card-chip, .category-header {
+    -webkit-user-select: none; -moz-user-select: none; user-select: none;
+    -webkit-touch-callout: none;
+  }
 
   .center-screen { max-width: 480px; margin: 80px auto; text-align: center; background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 8px 24px rgba(28,43,74,0.12); }
   .center-screen h2 { margin-bottom: 8px; }
@@ -298,23 +314,31 @@
     var progress = el('div', { class: 'progress' });
     app.appendChild(progress);
 
-    app.appendChild(el('h2', { text: 'Разделы' }));
-    var pool = el('div', { class: 'pool', id: 'pool' });
-    app.appendChild(pool);
+    var layout = el('div', { class: 'sort-layout' });
 
-    app.appendChild(el('h2', { text: 'Категории' }));
+    var poolCol = el('div', { class: 'sort-col' });
+    poolCol.appendChild(el('h2', { text: 'Разделы' }));
+    var pool = el('div', { class: 'pool', id: 'pool' });
+    poolCol.appendChild(pool);
+
+    var catCol = el('div', { class: 'sort-col' });
+    catCol.appendChild(el('h2', { text: 'Категории' }));
     var grid = el('div', { class: 'categories-grid' });
     var categoryBodies = {};
     config.categories.forEach(function (cat) {
       var header = el('div', { class: 'category-header' });
-      if (cat.image) header.appendChild(el('img', { class: 'thumb', src: cat.image }));
-      header.appendChild(el('span', { text: cat.label || '(без названия)' }));
+      if (cat.image) header.appendChild(el('img', { src: cat.image, draggable: 'false' }));
+      if (cat.label) header.appendChild(el('span', { text: cat.label }));
       var body = el('div', { class: 'category-body' });
       categoryBodies[cat.id] = body;
       var box = el('div', { class: 'category-box', 'data-category-id': cat.id }, [header, body]);
       grid.appendChild(box);
     });
-    app.appendChild(grid);
+    catCol.appendChild(grid);
+
+    layout.appendChild(poolCol);
+    layout.appendChild(catCol);
+    app.appendChild(layout);
 
     var actionsBar = el('div', { class: 'actions-bar' });
     var finishBtn = el('button', { class: 'primary-btn', text: 'Завершить', disabled: 'disabled', onclick: onFinish });
@@ -332,8 +356,8 @@
 
     function makeChip(item) {
       var chip = el('div', { class: 'card-chip', 'data-item-id': item.id });
-      if (item.image) chip.appendChild(el('img', { src: item.image }));
-      chip.appendChild(el('span', { text: item.label || '(без названия)' }));
+      if (item.image) chip.appendChild(el('img', { src: item.image, draggable: 'false' }));
+      if (item.label) chip.appendChild(el('span', { text: item.label }));
       attachDrag(chip, item.id);
       return chip;
     }
@@ -418,7 +442,9 @@
       var answers = {};
       Object.keys(placement).forEach(function (itemId) {
         var item = itemsById[itemId];
-        answers[item.label || itemId] = placement[itemId];
+        var idx = config.items.indexOf(item);
+        var key = item.label || ('Раздел ' + (idx + 1));
+        answers[key] = placement[itemId];
       });
       var categoryLabels = {};
       config.categories.forEach(function (c) { categoryLabels[c.id] = c.label || c.id; });
