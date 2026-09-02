@@ -58,6 +58,10 @@
   .sort-col { flex: 1 1 0; min-width: 0; }
   @media (max-width: 680px) {
     .sort-layout { flex-direction: column; }
+    .pool-col {
+      position: sticky; top: 0; z-index: 5; background: #f4f5f7;
+      padding-top: 4px; padding-bottom: 14px; margin-bottom: 6px;
+    }
   }
 
   .pool {
@@ -335,7 +339,7 @@
 
     var layout = el('div', { class: 'sort-layout' });
 
-    var poolCol = el('div', { class: 'sort-col' });
+    var poolCol = el('div', { class: 'sort-col pool-col' });
     poolCol.appendChild(el('h2', { text: 'Разделы' }));
     var pool = el('div', { class: 'pool', id: 'pool' });
     poolCol.appendChild(pool);
