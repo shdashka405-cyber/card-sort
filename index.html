@@ -23,7 +23,9 @@
   .col { flex: 1 1 320px; background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 4px 14px rgba(28,43,74,0.08); }
 
   .editor-item { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid #e6e8ec; border-radius: 8px; margin-bottom: 8px; }
-  .editor-item input[type="text"] { flex: 1; border: 1px solid #dcdfe4; border-radius: 6px; padding: 8px; font-size: 14px; }
+  .editor-item input[type="text"] { border: 1px solid #dcdfe4; border-radius: 6px; padding: 8px; font-size: 14px; }
+  .editor-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .editor-fields input[type="text"] { flex: none; width: 100%; }
   .thumb { width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: #f0f1f4; flex: none; }
   .thumb-empty { width: 40px; height: 40px; border-radius: 6px; background: #f0f1f4; flex: none; }
   .icon-btn { border: none; background: #f0f1f4; border-radius: 6px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; flex: none; }
@@ -61,16 +63,25 @@
   .pool {
     display: flex; flex-wrap: wrap; gap: 12px; padding: 14px; background: #fff;
     border-radius: 12px; min-height: 70px; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
+    border: 2px solid transparent;
   }
-  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .pool.drop-hover { border-color: #e8262b; background: #fdecec; }
+
+  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
   .category-box {
-    background: #fff; border: 2px solid #dcdfe4; border-radius: 12px; padding: 12px; min-height: 150px;
+    background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
     display: flex; flex-direction: column; outline: none;
   }
-  .category-box.drop-hover { border-color: #e8262b; background: #fdecec; }
-  .category-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
-  .category-header img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; -webkit-user-drag: none; user-drag: none; }
-  .category-body { display: flex; flex-wrap: wrap; gap: 10px; flex: 1; align-content: flex-start; }
+  .category-image-wrap { width: 100%; aspect-ratio: 16 / 10; background: #eef1f4; flex: none; }
+  .category-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; user-drag: none; }
+  .category-text { padding: 14px 16px 0; }
+  .category-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .category-desc { font-size: 13px; color: #6b7684; margin-bottom: 12px; }
+  .category-body {
+    margin: 0 16px 16px; padding: 10px; border: 2px solid #dcdfe4; border-radius: 10px; min-height: 90px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; flex: 1;
+  }
+  .category-box.drop-hover .category-body { border-color: #e8262b; background: #fdecec; }
 
   .card-chip {
     display: flex; flex-direction: column; align-items: center; gap: 6px; background: #f4f5f7; border-radius: 10px;
@@ -82,7 +93,7 @@
   .card-chip.dragging { opacity: 0.35; }
   .drag-ghost { position: fixed; z-index: 1000; pointer-events: none; }
 
-  .pool, .categories-grid, .category-box, .card-chip, .category-header {
+  .pool, .categories-grid, .category-box, .card-chip {
     -webkit-user-select: none; -moz-user-select: none; user-select: none;
     -webkit-touch-callout: none;
   }
@@ -128,7 +139,7 @@
   // ---------------------------------------------------------------------
   function renderAdmin() {
     var state = {
-      categories: [{ id: uid(), label: '', image: null }, { id: uid(), label: '', image: null }],
+      categories: [{ id: uid(), label: '', description: '', image: null }, { id: uid(), label: '', description: '', image: null }],
       items: [{ id: uid(), label: '', image: null }]
     };
 
@@ -142,7 +153,7 @@
     var catList = el('div');
     catCol.appendChild(catList);
     var addCatBtn = el('button', { class: 'add-btn', text: '+ Добавить категорию', onclick: function () {
-      state.categories.push({ id: uid(), label: '', image: null });
+      state.categories.push({ id: uid(), label: '', description: '', image: null });
       renderList(catList, state.categories, false);
     }});
     catCol.appendChild(addCatBtn);
@@ -182,9 +193,17 @@
           : el('div', { class: 'thumb-empty' });
         row.appendChild(thumb);
 
+        var fields = el('div', { class: 'editor-fields' });
         var textInput = el('input', { type: 'text', placeholder: isItem ? 'Название раздела' : 'Название категории', value: entry.label });
         textInput.addEventListener('input', function (e) { entry.label = e.target.value; });
-        row.appendChild(textInput);
+        fields.appendChild(textInput);
+
+        if (!isItem) {
+          var descInput = el('input', { type: 'text', placeholder: 'Короткое описание категории (необязательно)', value: entry.description || '' });
+          descInput.addEventListener('input', function (e) { entry.description = e.target.value; });
+          fields.appendChild(descInput);
+        }
+        row.appendChild(fields);
 
         var fileBtn = el('label', { class: 'icon-btn file-btn', title: 'Загрузить картинку' }, []);
         fileBtn.innerHTML = '🖼️';
@@ -326,12 +345,17 @@
     var grid = el('div', { class: 'categories-grid' });
     var categoryBodies = {};
     config.categories.forEach(function (cat) {
-      var header = el('div', { class: 'category-header' });
-      if (cat.image) header.appendChild(el('img', { src: cat.image, draggable: 'false' }));
-      if (cat.label) header.appendChild(el('span', { text: cat.label }));
+      var imageWrap = el('div', { class: 'category-image-wrap' });
+      if (cat.image) imageWrap.appendChild(el('img', { src: cat.image, draggable: 'false' }));
+
+      var textBlock = el('div', { class: 'category-text' });
+      if (cat.label) textBlock.appendChild(el('div', { class: 'category-title', text: cat.label }));
+      if (cat.description) textBlock.appendChild(el('div', { class: 'category-desc', text: cat.description }));
+
       var body = el('div', { class: 'category-body' });
       categoryBodies[cat.id] = body;
-      var box = el('div', { class: 'category-box', 'data-category-id': cat.id }, [header, body]);
+
+      var box = el('div', { class: 'category-box', 'data-category-id': cat.id }, [imageWrap, textBlock, body]);
       grid.appendChild(box);
     });
     catCol.appendChild(grid);
@@ -387,7 +411,8 @@
           ghost: ghost,
           offsetX: e.clientX - rect.left,
           offsetY: e.clientY - rect.top,
-          hoveredBox: null
+          hoveredBox: null,
+          hoveredPool: false
         };
         chip.setPointerCapture && chip.setPointerCapture(e.pointerId);
       });
@@ -412,6 +437,12 @@
       }
       if (box) box.classList.add('drop-hover');
       dragState.hoveredBox = box;
+
+      var overPool = target ? !!target.closest('.pool') : false;
+      if (dragState.hoveredPool !== overPool) {
+        pool.classList.toggle('drop-hover', overPool);
+      }
+      dragState.hoveredPool = overPool;
     }
 
     function handleUp(e) {
@@ -422,14 +453,19 @@
       ds.chip.classList.remove('dragging');
       if (ds.ghost.parentNode) ds.ghost.parentNode.removeChild(ds.ghost);
       if (ds.hoveredBox) ds.hoveredBox.classList.remove('drop-hover');
+      pool.classList.remove('drop-hover');
 
       var targetCategoryId = ds.hoveredBox ? ds.hoveredBox.getAttribute('data-category-id') : null;
       if (targetCategoryId) {
         placement[ds.itemId] = targetCategoryId;
         categoryBodies[targetCategoryId].appendChild(ds.chip);
         updateProgress();
+      } else if (ds.hoveredPool) {
+        delete placement[ds.itemId];
+        pool.appendChild(ds.chip);
+        updateProgress();
       }
-      // если бросили не на категорию — карточка остаётся, где была (в DOM она не двигалась)
+      // если бросили в пустое место — карточка остаётся там, где была
     }
 
     function onFinish() {
