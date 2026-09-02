@@ -62,6 +62,11 @@
       position: sticky; top: 0; z-index: 5; background: #f4f5f7;
       padding-top: 4px; padding-bottom: 14px; margin-bottom: 6px;
     }
+    .categories-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .category-text { padding: 10px 12px 0; }
+    .category-title { font-size: 14px; margin-bottom: 2px; }
+    .category-desc { font-size: 11px; margin-bottom: 8px; }
+    .category-body { margin: 0 12px 12px; padding: 8px; min-height: 60px; gap: 6px; }
   }
 
   .pool {
@@ -487,7 +492,7 @@
         answers[key] = placement[itemId];
       });
       var categoryLabels = {};
-      config.categories.forEach(function (c) { categoryLabels[c.id] = c.label || c.id; });
+      config.categories.forEach(function (c, cidx) { categoryLabels[c.id] = c.label || ('Категория ' + (cidx + 1)); });
       var answersWithLabels = {};
       Object.keys(answers).forEach(function (k) { answersWithLabels[k] = categoryLabels[answers[k]] || answers[k]; });
 
