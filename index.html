@@ -105,6 +105,11 @@
 
   .center-screen { max-width: 480px; margin: 80px auto; text-align: center; background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 8px 24px rgba(28,43,74,0.12); }
   .center-screen h2 { margin-bottom: 8px; }
+  .intro-text { text-align: left; white-space: pre-wrap; color: #1c2b4a; font-size: 14px; line-height: 1.5; margin: 0 0 24px; }
+
+  .textarea-field { width: 100%; border: 1px solid #dcdfe4; border-radius: 8px; padding: 10px; font-size: 14px; font-family: inherit; resize: vertical; }
+  .link-btn { border: none; background: none; color: #6b7684; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 0; }
+  .link-btn:hover { color: #e8262b; }
 </style>
 </head>
 <body>
@@ -139,15 +144,53 @@
   // ---------------------------------------------------------------------
   // РЕЖИМ ИССЛЕДОВАТЕЛЯ (нет параметра ?s=)
   // ---------------------------------------------------------------------
+  var DRAFT_KEY = 'cardSortDraft';
+
+  function loadDraft() {
+    try {
+      var raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.categories) && Array.isArray(parsed.items)) return parsed;
+    } catch (e) {}
+    return null;
+  }
+
   function renderAdmin() {
-    var state = {
+    var draft = loadDraft();
+    var state = draft || {
       categories: [{ id: uid(), label: '', description: '', image: null }, { id: uid(), label: '', description: '', image: null }],
-      items: [{ id: uid(), label: '', image: null }]
+      items: [{ id: uid(), label: '', image: null }],
+      instructions: ''
     };
+    if (typeof state.instructions !== 'string') state.instructions = '';
+
+    function saveDraft() {
+      try { localStorage.setItem(DRAFT_KEY, JSON.stringify(state)); } catch (e) {}
+    }
 
     app.innerHTML = '';
     app.appendChild(el('h1', { text: 'Карточная сортировка — настройка' }));
     app.appendChild(el('p', { class: 'sub', text: 'Заполните категории и разделы (текст и/или картинка), затем опубликуйте — появится ссылка для респондентов.' }));
+
+    if (draft) {
+      var draftHint = el('p', { class: 'hint' }, [
+        document.createTextNode('Загружен сохранённый черновик настройки. ')
+      ]);
+      var clearBtn = el('button', { class: 'link-btn', text: 'Очистить черновик и начать заново', onclick: function () {
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        renderAdmin();
+      }});
+      draftHint.appendChild(clearBtn);
+      app.appendChild(draftHint);
+    }
+
+    app.appendChild(el('h2', { text: 'Инструкция для респондентов (необязательно)' }));
+    app.appendChild(el('p', { class: 'hint', text: 'Если заполнить, респондент сначала увидит эту инструкцию на отдельном экране и нажмёт «Далее», чтобы перейти к сортировке.' }));
+    var instructionsInput = el('textarea', { class: 'textarea-field', rows: '4', placeholder: 'Например: разложите карточки по категориям так, как вам кажется логичным...' });
+    instructionsInput.value = state.instructions;
+    instructionsInput.addEventListener('input', function (e) { state.instructions = e.target.value; saveDraft(); });
+    app.appendChild(instructionsInput);
 
     var columns = el('div', { class: 'columns' });
     var catCol = el('div', { class: 'col' });
@@ -157,6 +200,7 @@
     var addCatBtn = el('button', { class: 'add-btn', text: '+ Добавить категорию', onclick: function () {
       state.categories.push({ id: uid(), label: '', description: '', image: null });
       renderList(catList, state.categories, false);
+      saveDraft();
     }});
     catCol.appendChild(addCatBtn);
 
@@ -167,6 +211,7 @@
     var addItemBtn = el('button', { class: 'add-btn', text: '+ Добавить раздел', onclick: function () {
       state.items.push({ id: uid(), label: '', image: null });
       renderList(itemList, state.items, true);
+      saveDraft();
     }});
     itemCol.appendChild(addItemBtn);
 
@@ -197,12 +242,12 @@
 
         var fields = el('div', { class: 'editor-fields' });
         var textInput = el('input', { type: 'text', placeholder: isItem ? 'Название раздела' : 'Название категории', value: entry.label });
-        textInput.addEventListener('input', function (e) { entry.label = e.target.value; });
+        textInput.addEventListener('input', function (e) { entry.label = e.target.value; saveDraft(); });
         fields.appendChild(textInput);
 
         if (!isItem) {
           var descInput = el('input', { type: 'text', placeholder: 'Короткое описание категории (необязательно)', value: entry.description || '' });
-          descInput.addEventListener('input', function (e) { entry.description = e.target.value; });
+          descInput.addEventListener('input', function (e) { entry.description = e.target.value; saveDraft(); });
           fields.appendChild(descInput);
         }
         row.appendChild(fields);
@@ -224,6 +269,7 @@
             } else {
               thumb.src = entry.image;
             }
+            saveDraft();
           };
           reader.readAsDataURL(file);
         });
@@ -234,6 +280,7 @@
           var idx = list.indexOf(entry);
           if (idx > -1) list.splice(idx, 1);
           renderList(container, list, isItem);
+          saveDraft();
         }});
         row.appendChild(delBtn);
 
@@ -261,7 +308,7 @@
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'saveConfig', categories: cleanCats, items: cleanItems })
+        body: JSON.stringify({ action: 'saveConfig', categories: cleanCats, items: cleanItems, instructions: state.instructions || '' })
       })
         .then(function (r) { return r.json(); })
         .then(function (res) {
@@ -317,6 +364,17 @@
     app.appendChild(el('div', { class: 'center-screen' }, [
       el('h2', { text: 'Спасибо!' }),
       el('p', { class: 'sub', text: 'Ваши ответы сохранены. Можно закрыть эту страницу.' })
+    ]));
+  }
+
+  function renderIntro(config) {
+    app.innerHTML = '';
+    var text = el('div', { class: 'intro-text' });
+    text.textContent = config.instructions;
+    app.appendChild(el('div', { class: 'center-screen' }, [
+      el('h2', { text: 'Инструкция' }),
+      text,
+      el('button', { class: 'primary-btn', text: 'Далее', onclick: function () { renderRespondent(config); } })
     ]));
   }
 
@@ -576,7 +634,11 @@
       .then(function (r) { return r.json(); })
       .then(function (res) {
         if (!res.ok) { renderRespondentError(res.error || 'Сессия не найдена.'); return; }
-        renderRespondent(res.config);
+        if (res.config.instructions && res.config.instructions.trim()) {
+          renderIntro(res.config);
+        } else {
+          renderRespondent(res.config);
+        }
       })
       .catch(function (err) { renderRespondentError('Ошибка сети: ' + err.message); });
   }
