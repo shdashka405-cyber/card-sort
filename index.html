@@ -52,66 +52,59 @@
   .link-row button { border: none; background: #1c2b4a; color: #fff; border-radius: 6px; padding: 0 16px; cursor: pointer; }
 
   /* respondent view */
-  .progress { font-size: 14px; color: #6b7684; margin-bottom: 16px; }
+  .sort-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+  .sort-header h1 { margin: 0; }
+  .sort-progress { font-size: 14px; font-weight: 700; color: #e8262b; white-space: nowrap; }
+  .sort-subheader { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; gap: 10px; flex-wrap: wrap; }
+  .sort-hint { font-size: 12px; color: #6b7684; }
+  .sort-remaining { font-size: 12px; font-weight: 700; color: #e8262b; white-space: nowrap; }
 
-  .sort-layout { display: flex; gap: 24px; align-items: flex-start; }
-  .sort-col { flex: 1 1 0; min-width: 0; }
-  @media (max-width: 680px) {
-    .sort-layout { flex-direction: column; }
-    .pool-col {
-      position: sticky; top: 0; z-index: 5; background: #f4f5f7;
-      padding-top: 4px; padding-bottom: 14px; margin-bottom: 6px;
-    }
-    .categories-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .category-text { padding: 10px 12px 0; }
-    .category-title { font-size: 14px; margin-bottom: 2px; }
-    .category-desc { font-size: 11px; margin-bottom: 8px; }
-    .category-body { margin: 0 12px 12px; padding: 8px; min-height: 60px; gap: 6px; }
-  }
+  .sort-columns { display: flex; gap: 14px; align-items: flex-start; }
+  .sort-column { flex: 1 1 0; min-width: 0; }
+  .col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #8a93a3; margin-bottom: 10px; }
 
-  .pool {
-    display: flex; flex-wrap: wrap; gap: 12px; padding: 14px; background: #fff;
-    border-radius: 12px; min-height: 70px; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
-    border: 2px solid transparent;
-  }
-  .pool.drop-hover { border-color: #e8262b; background: #fdecec; }
+  .queue-list, .cats-list { display: flex; flex-direction: column; gap: 8px; }
 
-  .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-  .category-box {
-    background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 14px rgba(28,43,74,0.08);
-    display: flex; flex-direction: column; outline: none;
+  .queue-card {
+    background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 2px 6px rgba(28,43,74,0.07);
+    opacity: 0.55; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
-  .category-image-wrap { width: 100%; aspect-ratio: 16 / 10; background: #eef1f4; flex: none; }
-  .category-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; -webkit-user-drag: none; user-drag: none; }
-  .category-text { padding: 14px 16px 0; }
-  .category-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
-  .category-desc { font-size: 13px; color: #6b7684; margin-bottom: 12px; }
-  .category-body {
-    margin: 0 16px 16px; padding: 10px; border: 2px solid #dcdfe4; border-radius: 10px; min-height: 90px;
-    display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; flex: 1;
-  }
-  .category-box.drop-hover .category-body { border-color: #e8262b; background: #fdecec; }
+  .queue-card.active { opacity: 1; cursor: grab; touch-action: none; box-shadow: 0 4px 12px rgba(28,43,74,0.12); }
+  .queue-card.dragging { opacity: 0.35; }
+  .queue-card-top { display: flex; align-items: center; gap: 8px; }
+  .queue-card-thumb { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; flex: none; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+  .queue-card-title { font-size: 13px; font-weight: 600; word-break: break-word; }
+  .queue-card-meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; font-size: 11px; }
+  .queue-index { color: #b4bac4; }
+  .queue-status { color: #b4bac4; }
+  .queue-card.active .queue-status { color: #e8262b; font-weight: 700; }
 
-  .card-chip {
-    display: flex; flex-direction: column; align-items: center; gap: 6px; background: #f4f5f7; border-radius: 10px;
-    padding: 10px; width: 120px; font-size: 13px; text-align: center; cursor: grab; touch-action: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  .cat-row {
+    background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 2px 6px rgba(28,43,74,0.07);
+    border: 2px solid transparent; cursor: pointer;
   }
-  .card-chip img { width: 100px; height: 100px; border-radius: 8px; object-fit: cover; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
-  .card-chip span { word-break: break-word; }
-  .card-chip.dragging { opacity: 0.35; }
-  .drag-ghost { position: fixed; z-index: 1000; pointer-events: none; }
+  .cat-row.drop-hover { border-color: #e8262b; background: #fdecec; }
+  .cat-row-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .cat-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; min-width: 0; }
+  .cat-title span { word-break: break-word; }
+  .cat-thumb { width: 24px; height: 24px; border-radius: 6px; object-fit: cover; flex: none; pointer-events: none; -webkit-user-drag: none; user-drag: none; }
+  .cat-badge {
+    width: 22px; height: 22px; border-radius: 50%; background: #e8262b; color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .cat-chips { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .cat-chip {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #f4f5f7;
+    border-radius: 7px; padding: 6px 8px; font-size: 12px;
+  }
+  .cat-chip span { word-break: break-word; }
+  .cat-chip-remove { border: none; background: none; color: #8a93a3; cursor: pointer; font-size: 13px; line-height: 1; flex: none; }
+  .cat-chip-remove:hover { color: #e8262b; }
 
-  .pool, .categories-grid, .category-box, .card-chip {
-    -webkit-user-select: none; -moz-user-select: none; user-select: none;
-    -webkit-touch-callout: none;
-  }
+  .drag-ghost { position: fixed; z-index: 1000; pointer-events: none; width: 200px; }
 
   .center-screen { max-width: 480px; margin: 80px auto; text-align: center; background: #fff; padding: 32px; border-radius: 14px; box-shadow: 0 8px 24px rgba(28,43,74,0.12); }
   .center-screen h2 { margin-bottom: 8px; }
-
-  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .respondent-name-input { padding: 8px; border: 1px solid #dcdfe4; border-radius: 6px; font-size: 14px; width: 220px; }
 </style>
 </head>
 <body>
@@ -330,48 +323,47 @@
   function renderRespondent(config) {
     var submitted = false;
     var placement = {}; // itemId -> categoryId
-    var itemsById = {};
-    config.items.forEach(function (i) { itemsById[i.id] = i; });
+
+    var itemLabel = {};
+    config.items.forEach(function (item, idx) { itemLabel[item.id] = item.label || ('Раздел ' + (idx + 1)); });
+
+    var catLabel = {};
+    config.categories.forEach(function (cat, idx) { catLabel[cat.id] = cat.label || ('Категория ' + (idx + 1)); });
+
+    var queue = config.items.slice();
+    var assignedByCategory = {};
+    config.categories.forEach(function (cat) { assignedByCategory[cat.id] = []; });
 
     app.innerHTML = '';
-    var topBar = el('div', { class: 'top-bar' }, [
-      el('h1', { text: 'Разложите карточки по категориям' })
-    ]);
-    app.appendChild(topBar);
 
-    var progress = el('div', { class: 'progress' });
-    app.appendChild(progress);
+    var progressEl = el('div', { class: 'sort-progress' });
+    app.appendChild(el('div', { class: 'sort-header' }, [
+      el('h1', { text: 'Карточная сортировка' }),
+      progressEl
+    ]));
 
-    var layout = el('div', { class: 'sort-layout' });
+    var remainingEl = el('div', { class: 'sort-remaining' });
+    app.appendChild(el('div', { class: 'sort-subheader' }, [
+      el('div', { class: 'sort-hint', text: 'Перетащите карточку вправо или нажмите на категорию' }),
+      remainingEl
+    ]));
 
-    var poolCol = el('div', { class: 'sort-col pool-col' });
-    poolCol.appendChild(el('h2', { text: 'Разделы' }));
-    var pool = el('div', { class: 'pool', id: 'pool' });
-    poolCol.appendChild(pool);
+    var columns = el('div', { class: 'sort-columns' });
 
-    var catCol = el('div', { class: 'sort-col' });
-    catCol.appendChild(el('h2', { text: 'Категории' }));
-    var grid = el('div', { class: 'categories-grid' });
-    var categoryBodies = {};
-    config.categories.forEach(function (cat) {
-      var imageWrap = el('div', { class: 'category-image-wrap' });
-      if (cat.image) imageWrap.appendChild(el('img', { src: cat.image, draggable: 'false' }));
+    var queueCol = el('div', { class: 'sort-column' });
+    queueCol.appendChild(el('div', { class: 'col-title', text: 'Очередь карточек' }));
+    var queueList = el('div', { class: 'queue-list' });
+    queueCol.appendChild(queueList);
 
-      var textBlock = el('div', { class: 'category-text' });
-      if (cat.label) textBlock.appendChild(el('div', { class: 'category-title', text: cat.label }));
-      if (cat.description) textBlock.appendChild(el('div', { class: 'category-desc', text: cat.description }));
+    var catsColTitle = el('div', { class: 'col-title' });
+    var catsCol = el('div', { class: 'sort-column' });
+    catsCol.appendChild(catsColTitle);
+    var catsList = el('div', { class: 'cats-list' });
+    catsCol.appendChild(catsList);
 
-      var body = el('div', { class: 'category-body' });
-      categoryBodies[cat.id] = body;
-
-      var box = el('div', { class: 'category-box', 'data-category-id': cat.id }, [imageWrap, textBlock, body]);
-      grid.appendChild(box);
-    });
-    catCol.appendChild(grid);
-
-    layout.appendChild(poolCol);
-    layout.appendChild(catCol);
-    app.appendChild(layout);
+    columns.appendChild(queueCol);
+    columns.appendChild(catsCol);
+    app.appendChild(columns);
 
     var actionsBar = el('div', { class: 'actions-bar' });
     var finishBtn = el('button', { class: 'primary-btn', text: 'Завершить', disabled: 'disabled', onclick: onFinish });
@@ -380,55 +372,120 @@
     var errorBox = el('div', { class: 'error-msg' });
     app.appendChild(errorBox);
 
-    function updateProgress() {
-      var done = Object.keys(placement).length;
-      var total = config.items.length;
-      progress.textContent = 'Разложено ' + done + ' из ' + total;
-      finishBtn.disabled = done < total;
-    }
-
-    function makeChip(item) {
-      var chip = el('div', { class: 'card-chip', 'data-item-id': item.id });
-      if (item.image) chip.appendChild(el('img', { src: item.image, draggable: 'false' }));
-      if (item.label) chip.appendChild(el('span', { text: item.label }));
-      attachDrag(chip, item.id);
-      return chip;
-    }
-
-    config.items.forEach(function (item) { pool.appendChild(makeChip(item)); });
-    updateProgress();
-
-    // --- pointer-based drag & drop (работает и мышью, и тачем) ---
     var dragState = null;
 
-    function attachDrag(chip, itemId) {
-      chip.addEventListener('pointerdown', function (e) {
+    function pluralCategories(n) {
+      if (n === 1) return 'категория';
+      if (n >= 2 && n <= 4) return 'категории';
+      return 'категорий';
+    }
+
+    function updateHeader() {
+      var done = Object.keys(placement).length;
+      var total = config.items.length;
+      progressEl.textContent = done + ' / ' + total + ' распределено';
+      remainingEl.textContent = 'Осталось: ' + queue.length;
+      catsColTitle.textContent = config.categories.length + ' ' + pluralCategories(config.categories.length);
+      finishBtn.disabled = queue.length > 0;
+    }
+
+    function assign(item, cat) {
+      var idx = queue.indexOf(item);
+      if (idx === -1) return;
+      queue.splice(idx, 1);
+      placement[item.id] = cat.id;
+      assignedByCategory[cat.id].push(item);
+      renderQueue();
+      renderCategories();
+      updateHeader();
+    }
+
+    function unassign(item, cat) {
+      var arr = assignedByCategory[cat.id];
+      var idx = arr.indexOf(item);
+      if (idx === -1) return;
+      arr.splice(idx, 1);
+      delete placement[item.id];
+      queue.unshift(item);
+      renderQueue();
+      renderCategories();
+      updateHeader();
+    }
+
+    function renderQueue() {
+      queueList.innerHTML = '';
+      queue.forEach(function (item, i) {
+        var isActive = i === 0;
+        var top = el('div', { class: 'queue-card-top' });
+        if (item.image) top.appendChild(el('img', { class: 'queue-card-thumb', src: item.image, draggable: 'false' }));
+        top.appendChild(el('div', { class: 'queue-card-title', text: itemLabel[item.id] }));
+
+        var meta = el('div', { class: 'queue-card-meta' }, [
+          el('span', { class: 'queue-index', text: '#' + (config.items.indexOf(item) + 1) }),
+          el('span', { class: 'queue-status', text: isActive ? 'Тянуть →' : 'В очереди' })
+        ]);
+
+        var card = el('div', { class: 'queue-card' + (isActive ? ' active' : '') }, [top, meta]);
+        if (isActive && !submitted) attachDrag(card, item);
+        queueList.appendChild(card);
+      });
+    }
+
+    function renderCategories() {
+      catsList.innerHTML = '';
+      config.categories.forEach(function (cat) {
+        var assigned = assignedByCategory[cat.id];
+
+        var titleWrap = el('div', { class: 'cat-title' });
+        if (cat.image) titleWrap.appendChild(el('img', { class: 'cat-thumb', src: cat.image, draggable: 'false' }));
+        titleWrap.appendChild(el('span', { text: catLabel[cat.id] }));
+
+        var head = el('div', { class: 'cat-row-head' }, [titleWrap]);
+        if (assigned.length > 0) head.appendChild(el('div', { class: 'cat-badge', text: String(assigned.length) }));
+
+        var row = el('div', { class: 'cat-row', 'data-category-id': cat.id }, [head]);
+
+        if (assigned.length > 0) {
+          var chips = el('div', { class: 'cat-chips' });
+          assigned.forEach(function (item) {
+            var removeBtn = el('button', { class: 'cat-chip-remove', text: '✕', title: 'Убрать из категории', onclick: function (e) {
+              e.stopPropagation();
+              unassign(item, cat);
+            }});
+            chips.appendChild(el('div', { class: 'cat-chip' }, [el('span', { text: itemLabel[item.id] }), removeBtn]));
+          });
+          row.appendChild(chips);
+        }
+
+        row.addEventListener('click', function () {
+          if (submitted || queue.length === 0) return;
+          assign(queue[0], cat);
+        });
+
+        catsList.appendChild(row);
+      });
+    }
+
+    // --- pointer-based drag & drop (работает и мышью, и тачем) — доступно только активной карточке ---
+    function attachDrag(card, item) {
+      card.addEventListener('pointerdown', function (e) {
         if (submitted) return;
         e.preventDefault();
-        var rect = chip.getBoundingClientRect();
-        var ghost = chip.cloneNode(true);
-        ghost.className = 'card-chip drag-ghost';
-        ghost.style.width = rect.width + 'px';
+        var rect = card.getBoundingClientRect();
+        var ghost = card.cloneNode(true);
+        ghost.className = 'queue-card active drag-ghost';
         ghost.style.left = rect.left + 'px';
         ghost.style.top = rect.top + 'px';
         document.body.appendChild(ghost);
-        chip.classList.add('dragging');
+        card.classList.add('dragging');
 
-        dragState = {
-          itemId: itemId,
-          chip: chip,
-          ghost: ghost,
-          offsetX: e.clientX - rect.left,
-          offsetY: e.clientY - rect.top,
-          hoveredBox: null,
-          hoveredPool: false
-        };
-        chip.setPointerCapture && chip.setPointerCapture(e.pointerId);
+        dragState = { item: item, card: card, ghost: ghost, offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top, hoveredRow: null };
+        card.setPointerCapture && card.setPointerCapture(e.pointerId);
       });
 
-      chip.addEventListener('pointermove', function (e) { handleMove(e); });
-      chip.addEventListener('pointerup', function (e) { handleUp(e); });
-      chip.addEventListener('pointercancel', function (e) { handleUp(e); });
+      card.addEventListener('pointermove', function (e) { handleMove(e); });
+      card.addEventListener('pointerup', function (e) { handleUp(); });
+      card.addEventListener('pointercancel', function (e) { handleUp(); });
     }
 
     function handleMove(e) {
@@ -440,61 +497,40 @@
       var target = document.elementFromPoint(e.clientX, e.clientY);
       dragState.ghost.style.display = '';
 
-      var box = target ? target.closest('.category-box') : null;
-      if (dragState.hoveredBox && dragState.hoveredBox !== box) {
-        dragState.hoveredBox.classList.remove('drop-hover');
+      var row = target ? target.closest('.cat-row') : null;
+      if (dragState.hoveredRow && dragState.hoveredRow !== row) {
+        dragState.hoveredRow.classList.remove('drop-hover');
       }
-      if (box) box.classList.add('drop-hover');
-      dragState.hoveredBox = box;
-
-      var overPool = target ? !!target.closest('.pool') : false;
-      if (dragState.hoveredPool !== overPool) {
-        pool.classList.toggle('drop-hover', overPool);
-      }
-      dragState.hoveredPool = overPool;
+      if (row) row.classList.add('drop-hover');
+      dragState.hoveredRow = row;
     }
 
-    function handleUp(e) {
+    function handleUp() {
       if (!dragState) return;
       var ds = dragState;
       dragState = null;
 
-      ds.chip.classList.remove('dragging');
+      ds.card.classList.remove('dragging');
       if (ds.ghost.parentNode) ds.ghost.parentNode.removeChild(ds.ghost);
-      if (ds.hoveredBox) ds.hoveredBox.classList.remove('drop-hover');
-      pool.classList.remove('drop-hover');
+      if (ds.hoveredRow) ds.hoveredRow.classList.remove('drop-hover');
 
-      var targetCategoryId = ds.hoveredBox ? ds.hoveredBox.getAttribute('data-category-id') : null;
-      if (targetCategoryId) {
-        placement[ds.itemId] = targetCategoryId;
-        categoryBodies[targetCategoryId].appendChild(ds.chip);
-        updateProgress();
-      } else if (ds.hoveredPool) {
-        delete placement[ds.itemId];
-        pool.appendChild(ds.chip);
-        updateProgress();
-      }
-      // если бросили в пустое место — карточка остаётся там, где была
+      var categoryId = ds.hoveredRow ? ds.hoveredRow.getAttribute('data-category-id') : null;
+      var cat = categoryId ? config.categories.filter(function (c) { return c.id === categoryId; })[0] : null;
+      if (cat) assign(ds.item, cat);
+      // если бросили не на категорию — карточка остаётся в очереди
     }
 
     function onFinish() {
       if (submitted) return;
-      if (Object.keys(placement).length < config.items.length) return;
+      if (queue.length > 0) return;
       submitted = true;
       finishBtn.disabled = true;
       finishBtn.textContent = 'Отправка...';
 
       var answers = {};
       Object.keys(placement).forEach(function (itemId) {
-        var item = itemsById[itemId];
-        var idx = config.items.indexOf(item);
-        var key = item.label || ('Раздел ' + (idx + 1));
-        answers[key] = placement[itemId];
+        answers[itemLabel[itemId]] = catLabel[placement[itemId]];
       });
-      var categoryLabels = {};
-      config.categories.forEach(function (c, cidx) { categoryLabels[c.id] = c.label || ('Категория ' + (cidx + 1)); });
-      var answersWithLabels = {};
-      Object.keys(answers).forEach(function (k) { answersWithLabels[k] = categoryLabels[answers[k]] || answers[k]; });
 
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -503,7 +539,7 @@
           action: 'submitResponse',
           sessionId: sessionId,
           respondentId: uid(),
-          answers: answersWithLabels
+          answers: answers
         })
       })
         .then(function (r) { return r.json(); })
@@ -524,6 +560,10 @@
           errorBox.textContent = 'Не удалось связаться с сервером: ' + err.message;
         });
     }
+
+    renderQueue();
+    renderCategories();
+    updateHeader();
   }
 
   function loadRespondent() {
